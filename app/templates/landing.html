@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+{% load i18n %}
+{% load humanize %}
+
+<div style="width: 100%; text-align:center;">
+
+    This is a django application deployed on AWS ECS<br>
+    <img style="margin-top:20px;" src="{% static 'img/docker-on-aws.png' %}">
+
+</div>
+
+{% endblock %}
