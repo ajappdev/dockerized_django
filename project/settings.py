@@ -12,40 +12,32 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from decouple import Config, RepositoryEnv
 import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-
-env_secret_key = ""
-env_database_name = ""
-env_database_user = ""
-env_database_host = ""
-env_database_password = ""
-env_database_port = ""
-
 try:
+    DOTENV_FILE = os.path.join(BASE_DIR, '.env.dev')
+    env_config = Config(RepositoryEnv(DOTENV_FILE))
+    env_key_value = env_config.get('SECRET_KEY')
+    env_database_name = env_config.get('POSTGRES_DB')
+    env_database_user = env_config.get('POSTGRES_USER')
+    env_database_password = env_config.get('POSTGRES_PASSWORD')
+    env_database_host = env_config.get('POSTGRES_HOST')
+    env_database_port = env_config.get('POSTGRES_PORT')
+except Exception:
     env_key_value = config('SECRET_KEY')
     env_database_name = config('POSTGRES_DB')
     env_database_user = config('POSTGRES_USER')
     env_database_password = config('POSTGRES_PASSWORD')
-except Exception:
-    env_key_value = os.environ.get('SECRET_KEY', '')
-    env_database_name = os.environ.get('POSTGRES_DB', '')
-    env_database_user = os.environ.get('POSTGRES_USER', '')
-    env_database_password = os.environ.get('POSTGRES_PASSWORD', '')
-
-try:
-    test_env_val = os.environ.get('MY_VAL', '')
-except:
-    pass
-
-print("test_env_val" , test_env_val)
+    env_database_host = config('POSTGRES_HOST')
+    env_database_port = config('POSTGRES_PORT')
 
 SECRET_KEY = env_key_value
 
@@ -53,7 +45,6 @@ SECRET_KEY = env_key_value
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -98,28 +89,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': env_database_name,
         'USER': env_database_user,
-        'PORT': '5432',
+        'PORT': env_database_port,
         'PASSWORD': env_database_password,
-        'HOST': 'postgres',
+        'HOST': env_database_host,
         'POST': '',
         'DISABLE_SERVER_SIDE_CURSORS': True,
+    },
+    'slave': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -159,7 +142,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-print(BASE_DIR)
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
