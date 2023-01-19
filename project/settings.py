@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 try:
-    DOTENV_FILE = os.path.join(BASE_DIR, '.env.dev')
+    DOTENV_FILE = os.path.join(BASE_DIR, '.envdev')
     env_config = Config(RepositoryEnv(DOTENV_FILE))
     env_key_value = env_config.get('SECRET_KEY')
     env_database_name = env_config.get('POSTGRES_DB')
